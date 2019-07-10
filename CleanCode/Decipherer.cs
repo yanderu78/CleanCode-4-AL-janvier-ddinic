@@ -84,8 +84,11 @@ namespace CleanCode
                         parseCode();
                     }
                 }
-                Console.WriteLine("All data decoded");
-                saveResult();
+                if (_code != "")
+                {
+                    Console.WriteLine("All data decoded");
+                    saveResult();
+                }
             }
             catch (IOException e)
             {
@@ -94,9 +97,27 @@ namespace CleanCode
             }
         }
 
+        private bool checkFormat(List<string> codeRows)
+        {
+            bool isOk = true;
+            if (codeRows.Count < 4)
+                isOk = false;
+            else 
+                for (int rowIterator = 0; rowIterator < ROW_COUNT; ++rowIterator)
+                    if (codeRows[rowIterator].Length != 27)
+                        isOk = false;
+            return isOk;
+        }
+
         private void parseCode()
         {
             List<string> codeRows = _code.Split(".").ToList();
+            if (!checkFormat(codeRows))
+            {
+                Console.WriteLine("Bad Format, jumping to next code or file");
+                _code = "";
+                return;
+            }
             _codeNumbers = new List<string>();
 
             for (int rowIterator = 0; rowIterator < ROW_COUNT; ++rowIterator)
